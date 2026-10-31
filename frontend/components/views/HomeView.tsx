@@ -6,9 +6,14 @@ import {
   Wind,
   Thermometer,
   Droplets,
-  Flame,
   ChevronDown,
   HeartPulse,
+  BrainCircuit,
+  Compass,
+  TrendingDown,
+  TrendingUp,
+  Activity,
+  Layers,
 } from "lucide-react";
 import {
   DashboardResponse,
@@ -57,6 +62,8 @@ export function HomeView({
   const windLabel = getWindDirectionLabel(windDir);
 
   const predictedPM25 = prediction?.prediction?.predicted_value ?? 82.3;
+  const delta = predictedPM25 - pm25;
+  const deltaPct = pm25 > 0 ? (delta / pm25) * 100 : 0;
 
   // 24-hour historical readings from forecast data
   const past24hData = useMemo(() => {
@@ -73,23 +80,48 @@ export function HomeView({
   // Audience-specific plain advice accessible to 5yo parents or 65+ seniors
   const audienceAdvice = {
     everyone: {
-      headline: category.category === "Good" ? "Air is fresh and healthy" : category.category === "Moderate" ? "Air quality is acceptable" : category.category === "Poor" ? "Air is moderately polluted with smoke" : "Air is unhealthy with high particulate matter",
+      headline:
+        category.category === "Good"
+          ? "Air is fresh and healthy"
+          : category.category === "Moderate"
+          ? "Air quality is acceptable"
+          : category.category === "Poor"
+          ? "Air is moderately polluted with smoke"
+          : "Air is unhealthy with elevated particulate matter",
       summary: category.healthImplications,
       tag: "General Guidance",
     },
     kids: {
-      headline: category.category === "Good" ? "Great day for outdoor play" : "Developing lungs need extra protection today",
-      summary: category.category === "Good" || category.category === "Moderate" ? "Safe for school recess and outdoor activities. Ensure plenty of water." : "Children breathe 50% more air per pound than adults. Keep active playtime indoors, especially during evening hours.",
+      headline:
+        category.category === "Good"
+          ? "Great day for outdoor play"
+          : "Developing lungs need extra protection today",
+      summary:
+        category.category === "Good" || category.category === "Moderate"
+          ? "Safe for school recess and outdoor activities. Ensure plenty of water."
+          : "Children breathe 50% more air per pound of body weight than adults. Keep active playtime indoors, especially during evening hours.",
       tag: "For Children (Under 5)",
     },
     seniors: {
-      headline: category.category === "Good" ? "Safe for morning walks" : "Cardiac and lung precautions recommended",
-      summary: category.category === "Good" || category.category === "Moderate" ? "Safe for gentle morning strolls and garden time." : "Seniors (65+) experience elevated cardiac strain during particulate spikes. Avoid early morning cold air walks when thermal inversion traps ground smoke.",
+      headline:
+        category.category === "Good"
+          ? "Safe for morning walks"
+          : "Cardiac and lung precautions recommended",
+      summary:
+        category.category === "Good" || category.category === "Moderate"
+          ? "Safe for gentle morning strolls and garden time."
+          : "Seniors (65+) experience elevated cardiac strain during particulate spikes. Avoid early morning cold air walks when thermal inversion traps ground smoke.",
       tag: "For Seniors (65+)",
     },
     athletes: {
-      headline: category.category === "Good" ? "Optimal athletic window" : "Shift heavy aerobic training indoors",
-      summary: category.category === "Good" ? "Ideal conditions for marathon training, running, and cycling." : "Heavy breathing draws fine particles 4x deeper into lung tissue. Schedule outdoor training between 13:00 and 16:00 when daytime sun disperses ground smoke.",
+      headline:
+        category.category === "Good"
+          ? "Optimal athletic window"
+          : "Shift heavy aerobic training indoors",
+      summary:
+        category.category === "Good"
+          ? "Ideal conditions for marathon training, running, and cycling."
+          : "Heavy breathing draws fine particles 4x deeper into lung tissue. Schedule outdoor training between 13:00 and 16:00 when daytime sun disperses ground smoke.",
       tag: "For Active Runners",
     },
   };
@@ -99,11 +131,11 @@ export function HomeView({
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
       {/* =========================================================================
-          HERO SECTION — ULTRA CLEAN, HIGH ACCESSIBILITY, DOMINANT PM2.5 FOCUS
-          Communicates 3 Things:
-          1. Current PM2.5 Situation (Exceptionally Bold)
-          2. Health Status (Plain English for 5yo or 65+)
-          3. One Clear Primary Action (Significantly Larger "Pua" Button)
+          HERO SECTION — PREDICTION MODEL & CURRENT SITUATION AS TWIN HEROES
+          1. Current Ground Observation (PM2.5 Bold Ground Telemetry)
+          2. Machine Learning Anticipation (t + 1h Random Forest Model)
+          3. Accessible Health Status (Plain English for 5yo or 65+)
+          4. Prominent Action Buttons (Explore 24h & Chandigarh Air Intelligence)
          ========================================================================= */}
       <section className="relative rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-7 sm:p-10 lg:p-12 shadow-sm overflow-hidden">
         {/* Soft atmospheric gradient accent */}
@@ -112,8 +144,8 @@ export function HomeView({
           style={{ backgroundColor: category.color }}
         />
 
-        <div className="relative z-10 space-y-6">
-          {/* Header Metadata: Location + Time */}
+        <div className="relative z-10 space-y-7">
+          {/* Header Metadata: Location + Time + Air Category */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-4">
             <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[var(--text-secondary)]">
               <span
@@ -143,30 +175,114 @@ export function HomeView({
             </div>
           </div>
 
-          {/* DOMINANT VISUAL ELEMENT: EXCEPTIONALLY BOLD PM 2.5 READING */}
-          <div className="pt-2">
-            <div className="text-xs sm:text-sm font-mono uppercase tracking-[0.2em] text-[var(--text-muted)] font-bold mb-1">
-              Primary Pollutant Reading
+          {/* DUAL ENVIRONMENTAL INTELLIGENCE: CURRENT READING vs ML ANTICIPATION HERO */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* Left: Dominant Current Ground Sensor Observation */}
+            <div className="lg:col-span-7 flex flex-col justify-between space-y-3">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.16em] text-[var(--text-muted)] font-bold mb-1">
+                  <span>Current Ground Telemetry</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                </div>
+
+                <div className="flex flex-wrap items-baseline gap-4 sm:gap-6 mt-1">
+                  <span className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--text-primary)] uppercase">
+                    PM 2.5
+                  </span>
+
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-6xl sm:text-7xl lg:text-8xl font-black font-sans tracking-tight text-[var(--text-primary)] tabular-nums">
+                      {formatNumber(pm25, 1)}
+                    </span>
+                    <span className="text-xl sm:text-2xl font-bold font-mono text-[var(--text-muted)]">
+                      µg/m³
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed max-w-xl">
+                Fine particulate matter suspended at ground breathing height. Key health determinant calibrated against continuous ambient monitors.
+              </p>
             </div>
 
-            <div className="flex flex-wrap items-baseline gap-4 sm:gap-6">
-              <span className="text-4xl sm:text-5xl font-black tracking-tight text-[var(--text-primary)] uppercase">
-                PM 2.5
-              </span>
+            {/* Right: Machine Learning Anticipation Hero Block */}
+            <div className="lg:col-span-5 p-5 sm:p-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] space-y-3.5 shadow-xs flex flex-col justify-between">
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <BrainCircuit size={16} className="text-[var(--accent-primary)]" />
+                    <span className="text-xs font-mono uppercase font-bold tracking-wider text-[var(--accent-primary)]">
+                      ML Anticipation · t + 60m
+                    </span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-[var(--text-muted)] font-medium">
+                    Random Forest
+                  </span>
+                </div>
 
-              <div className="flex items-baseline gap-2">
-                <span className="text-6xl sm:text-7xl lg:text-8xl font-black font-sans tracking-tight text-[var(--text-primary)] tabular-nums">
-                  {formatNumber(pm25, 1)}
+                <div className="flex items-baseline gap-3 pt-0.5">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-4xl sm:text-5xl font-black font-mono text-[var(--text-primary)] tabular-nums">
+                      {formatNumber(predictedPM25, 1)}
+                    </span>
+                    <span className="text-sm font-bold font-mono text-[var(--text-muted)]">
+                      µg/m³
+                    </span>
+                  </div>
+
+                  {/* Directional Trajectory Badge */}
+                  <div
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold font-mono border ${
+                      delta < -1
+                        ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/25"
+                        : delta > 1
+                        ? "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/25"
+                        : "bg-[var(--bg-secondary)] text-[var(--text-muted)] border-[var(--border-subtle)]"
+                    }`}
+                  >
+                    {delta < -1 ? (
+                      <>
+                        <TrendingDown size={13} />
+                        <span>↓ {Math.abs(delta).toFixed(1)} ({Math.abs(deltaPct).toFixed(0)}%)</span>
+                      </>
+                    ) : delta > 1 ? (
+                      <>
+                        <TrendingUp size={13} />
+                        <span>↑ +{delta.toFixed(1)} (+{deltaPct.toFixed(0)}%)</span>
+                      </>
+                    ) : (
+                      <span>→ Steady</span>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                  {delta < -1
+                    ? "Atmospheric kinetic ventilation active. Particulate load anticipated to decrease over the next 60 minutes."
+                    : delta > 1
+                    ? "Boundary layer accumulation underway. Particulate concentration projected to increase over the next 60 minutes."
+                    : "Atmospheric equilibrium holding steady within standard dispersion variance over the next hour."}
+                </p>
+              </div>
+
+              <div className="pt-2.5 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-mono">
+                <span className="text-[var(--text-muted)]">
+                  Validated Error: <strong className="text-[var(--text-primary)] font-semibold">MAE ±2.96 µg/m³</strong>
                 </span>
-                <span className="text-xl sm:text-2xl font-bold font-mono text-[var(--text-muted)]">
-                  µg/m³
-                </span>
+                <button
+                  onClick={() => onNavigateTab("intelligence")}
+                  className="text-[var(--accent-primary)] font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Model Details</span>
+                  <ArrowRight size={12} />
+                </button>
               </div>
             </div>
           </div>
 
           {/* PLAIN ENGLISH HEALTH STATUS & AUDIENCE SWITCHER */}
-          <div className="space-y-3 pt-2">
+          <div className="space-y-3 pt-1">
             {/* Quick Audience Accessibility Tabs */}
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <span className="text-xs font-semibold text-[var(--text-muted)] mr-1">
@@ -206,7 +322,7 @@ export function HomeView({
             </div>
           </div>
 
-          {/* PRIMARY ACTION BUTTON — APPLE & WISPR FLOW INTERACTION QUALITY */}
+          {/* PRIMARY ACTION BUTTONS — PROMINENT, UNCLUTTERED, ERGONOMIC */}
           <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             <button
               onClick={() => onNavigateTab("trends")}
@@ -220,31 +336,160 @@ export function HomeView({
             </button>
 
             <button
-              onClick={() => onNavigateTab("diwali")}
-              className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] hover:bg-[var(--surface-subtle)] text-[var(--text-primary)] text-sm font-semibold transition-all active:scale-[0.99] cursor-pointer"
+              onClick={() => onNavigateTab("basin-intel")}
+              className="flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] hover:bg-[var(--surface-subtle)] text-[var(--text-primary)] text-sm font-semibold transition-all active:scale-[0.99] cursor-pointer shadow-xs"
             >
-              <Flame size={16} className="text-amber-600 dark:text-amber-400" />
-              <span>Diwali Festival Problem Statement</span>
+              <Compass size={16} className="text-[var(--accent-primary)]" />
+              <span>
+                {city.id === "chandigarh"
+                  ? "Chandigarh Air Intelligence"
+                  : `${city.name} Air Intelligence`}
+              </span>
             </button>
           </div>
 
           {/* Subtle Indication that More Intelligence is Below */}
-          <div className="pt-4 flex items-center justify-center sm:justify-start gap-1.5 text-xs text-[var(--text-muted)] font-mono">
-            <span>Scroll below for 5 atmospheric sensors & machine learning forecast</span>
+          <div className="pt-2 flex items-center justify-center sm:justify-start gap-1.5 text-xs text-[var(--text-muted)] font-mono">
+            <span>Scroll below for machine learning trajectory & 5 atmospheric sensors</span>
             <ChevronDown size={14} className="text-[var(--text-muted)]" />
           </div>
         </div>
       </section>
 
       {/* =========================================================================
-          SECTION 2: FIVE CORE ATMOSPHERIC SENSORS (CLEAN, PROPORTIONAL GRID)
-          Fixes Grid Malfunction: Solid 2-col on mobile, 3-col on tablet, 5-col on desktop
+          SECTION 2: MACHINE LEARNING 24-HOUR TRAJECTORY & ANTICIPATION WINDOW
+          Elevated higher on the page to make the ML prediction model the hero USP
          ========================================================================= */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold font-mono uppercase tracking-wider text-[var(--text-muted)]">
-            Atmospheric Sensor Matrix
-          </h2>
+          <div className="flex items-center gap-2">
+            <Activity size={16} className="text-[var(--accent-primary)]" />
+            <h2 className="text-sm font-semibold font-mono uppercase tracking-wider text-[var(--text-muted)]">
+              Predictive Intelligence & Trajectory Vector
+            </h2>
+          </div>
+          <span className="text-xs text-[var(--text-muted)] font-mono">
+            Trained on 2,208h Atmospheric Records
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left: 24h Historical Particulate Trajectory */}
+          <div className="lg:col-span-7 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-6 sm:p-7 space-y-4 shadow-xs">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+              <div>
+                <h3 className="font-bold text-base text-[var(--text-primary)]">
+                  24-Hour Particulate Trajectory
+                </h3>
+                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                  Observed PM2.5 trend and boundary diurnal fluctuations in {city.name}
+                </p>
+              </div>
+
+              <button
+                onClick={() => onNavigateTab("trends")}
+                className="text-xs font-semibold text-[var(--accent-primary)] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <span>Full Telemetry</span>
+                <ArrowRight size={13} />
+              </button>
+            </div>
+
+            <div className="h-48 w-full pt-2">
+              {past24hData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={past24hData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="homeTrendGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={category.color} stopOpacity={0.25} />
+                        <stop offset="95%" stopColor={category.color} stopOpacity={0.0} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="time" stroke="var(--text-muted)" fontSize={10} tickLine={false} />
+                    <Area
+                      type="monotone"
+                      dataKey="pm2_5"
+                      stroke={category.color}
+                      strokeWidth={2.5}
+                      fill="url(#homeTrendGrad)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-xs text-[var(--text-muted)] font-mono">
+                  Loading 24h telemetry curve...
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right: Random Forest Model Insights & Driving Features */}
+          <div className="lg:col-span-5 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-6 sm:p-7 space-y-4 shadow-xs flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+                <div className="flex items-center gap-2">
+                  <BrainCircuit size={15} className="text-[var(--accent-primary)]" />
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--accent-primary)] font-bold">
+                    Random Forest Physics Weights
+                  </span>
+                </div>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[var(--surface-elevated)] border border-[var(--border-subtle)] text-[var(--text-muted)]">
+                  200 Trees
+                </span>
+              </div>
+
+              <div className="space-y-2.5 pt-1">
+                {[
+                  { name: "Current PM2.5 Persistence", pct: 44.8 },
+                  { name: "Wind Velocity (Flushing)", pct: 19.3 },
+                  { name: "Relative Humidity (Haze)", pct: 14.6 },
+                  { name: "PM10 Coarse Ratio", pct: 10.4 },
+                ].map((feat) => (
+                  <div key={feat.name} className="space-y-1">
+                    <div className="flex justify-between text-xs">
+                      <span className="font-medium text-[var(--text-primary)]">{feat.name}</span>
+                      <span className="font-mono font-semibold text-[var(--accent-primary)]">
+                        {feat.pct}%
+                      </span>
+                    </div>
+                    <div className="w-full h-1.5 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[var(--accent-primary)] rounded-full"
+                        style={{ width: `${feat.pct * 2}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
+              <span className="text-[var(--text-muted)] font-mono text-[11px]">
+                Validated R²: <strong className="text-[var(--text-primary)]">0.981</strong>
+              </span>
+              <button
+                onClick={() => onNavigateTab("intelligence")}
+                className="text-xs font-semibold text-[var(--accent-primary)] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <span>View Full Diagnostics</span>
+                <ArrowRight size={12} />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION 3: FIVE CORE ATMOSPHERIC SENSORS (GROUND MATRIX)
+         ========================================================================= */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Layers size={16} className="text-[var(--text-muted)]" />
+            <h2 className="text-sm font-semibold font-mono uppercase tracking-wider text-[var(--text-muted)]">
+              Atmospheric Sensor Matrix
+            </h2>
+          </div>
           <span className="text-xs text-[var(--text-muted)] font-mono">
             Ground-level observations
           </span>
@@ -333,107 +578,6 @@ export function HomeView({
               {windLabel} ({formatNumber(windDir, 0)}°)
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 3: 24-HOUR TREND & 1-HOUR RANDOM FOREST PREDICTION PREVIEW
-         ========================================================================= */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left: 24h Historical Curve */}
-        <div className="lg:col-span-7 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-6 sm:p-7 space-y-4 shadow-xs">
-          <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
-            <div>
-              <h3 className="font-bold text-base text-[var(--text-primary)]">
-                24-Hour Particulate Trajectory
-              </h3>
-              <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-                Observed PM2.5 trend across {city.name}
-              </p>
-            </div>
-
-            <button
-              onClick={() => onNavigateTab("trends")}
-              className="text-xs font-semibold text-[var(--accent-primary)] hover:underline flex items-center gap-1 cursor-pointer"
-            >
-              <span>Detailed Charts</span>
-              <ArrowRight size={13} />
-            </button>
-          </div>
-
-          <div className="h-44 w-full pt-2">
-            {past24hData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={past24hData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="homeTrendGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={category.color} stopOpacity={0.3} />
-                      <stop offset="95%" stopColor={category.color} stopOpacity={0.0} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="time" stroke="var(--text-muted)" fontSize={10} tickLine={false} />
-                  <Area
-                    type="monotone"
-                    dataKey="pm2_5"
-                    stroke={category.color}
-                    strokeWidth={2.5}
-                    fill="url(#homeTrendGrad)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex items-center justify-center text-xs text-[var(--text-muted)] font-mono">
-                Loading 24h telemetry curve...
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right: 1-Hour Ahead Random Forest Prediction */}
-        <div className="lg:col-span-5 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-6 sm:p-7 space-y-4 shadow-xs flex flex-col justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--accent-primary)] font-bold">
-                1-Hour Ahead ML Anticipation
-              </span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[var(--surface-elevated)] border border-[var(--border-subtle)] text-[var(--text-muted)]">
-                t + 60m
-              </span>
-            </div>
-
-            <div className="flex items-baseline justify-between pt-1">
-              <div>
-                <span className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Now</span>
-                <div className="text-2xl font-black font-mono text-[var(--text-primary)]">
-                  {formatNumber(pm25, 1)} <span className="text-xs text-[var(--text-muted)]">µg/m³</span>
-                </div>
-              </div>
-
-              <span className="text-lg font-mono text-[var(--text-muted)]">→</span>
-
-              <div>
-                <span className="text-[10px] font-mono uppercase text-[var(--accent-primary)] font-bold">
-                  Model Expected
-                </span>
-                <div className="text-3xl font-black font-mono text-[var(--accent-primary)]">
-                  {formatNumber(predictedPM25, 1)} <span className="text-xs text-[var(--text-muted)]">µg/m³</span>
-                </div>
-              </div>
-            </div>
-
-            <p className="text-xs text-[var(--text-secondary)] leading-relaxed pt-1">
-              Calibrated on 14 autoregressive lags and boundary meteorology. Validation error:{" "}
-              <strong className="text-[var(--text-primary)]">MAE ±2.96 µg/m³</strong>.
-            </p>
-          </div>
-
-          <button
-            onClick={() => onNavigateTab("intelligence")}
-            className="w-full py-2.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] hover:bg-[var(--surface-subtle)] text-xs font-semibold text-[var(--text-primary)] transition-all cursor-pointer flex items-center justify-center gap-1.5"
-          >
-            <span>View Model Physics & Weights</span>
-            <ArrowRight size={13} />
-          </button>
         </div>
       </section>
     </div>

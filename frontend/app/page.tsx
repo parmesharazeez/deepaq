@@ -13,7 +13,7 @@ import { Footer } from "../components/Footer";
 
 // Dedicated Platform Views
 import { HomeView } from "../components/views/HomeView";
-import { DiwaliView } from "../components/views/DiwaliView";
+import { BasinIntelligenceView } from "../components/views/BasinIntelligenceView";
 import { ExploreView } from "../components/views/ExploreView";
 import { IntelligenceView } from "../components/views/IntelligenceView";
 import { TrendsView } from "../components/views/TrendsView";
@@ -226,9 +226,9 @@ export default function Home() {
                 />
               )}
 
-              {/* VIEW 2: DIWALI ATMOSPHERIC SCIENCE & FESTIVAL HUB */}
-              {activeSection === "diwali" && (
-                <DiwaliView
+              {/* VIEW 2: BASIN / CHANDIGARH AIR INTELLIGENCE */}
+              {(activeSection === "basin-intel" || activeSection === "diwali") && (
+                <BasinIntelligenceView
                   city={selectedCity}
                   dashboard={dashboard}
                   prediction={prediction}

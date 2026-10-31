@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import Image from "next/image";
 import {
   LayoutDashboard,
-  Flame,
   Compass,
+  Layers,
   BrainCircuit,
   TrendingUp,
   ShieldCheck,
@@ -35,9 +35,9 @@ interface SidebarProps {
 
 const NAV_ITEMS = [
   { id: "overview", label: "Dashboard", icon: LayoutDashboard },
-  { id: "diwali", label: "Diwali Special", icon: Flame, badge: "FESTIVAL" },
+  { id: "basin-intel", label: "Basin Intel", icon: Compass, badge: "LOCAL" },
   { id: "trends", label: "24h Forecast", icon: TrendingUp },
-  { id: "explore", label: "All Basins", icon: Compass, badge: "16" },
+  { id: "explore", label: "All Basins", icon: Layers, badge: "16" },
   { id: "intelligence", label: "ML Model", icon: BrainCircuit, badge: "1H" },
   { id: "health", label: "Health Guide", icon: ShieldCheck },
   { id: "geography", label: "Spatial Map", icon: MapPin },
@@ -132,7 +132,6 @@ export function Sidebar({
           {NAV_ITEMS.map((item, idx) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
-            const isDiwali = item.id === "diwali";
 
             return (
               <button
@@ -155,8 +154,6 @@ export function Sidebar({
                     className={`shrink-0 transition-colors ${
                       isActive
                         ? "text-[var(--accent-primary)]"
-                        : isDiwali
-                        ? "text-amber-500"
                         : "text-[var(--text-muted)] group-hover:text-[var(--text-secondary)]"
                     }`}
                   />
@@ -165,13 +162,7 @@ export function Sidebar({
                   )}
                 </div>
                 {!collapsed && item.badge && (
-                  <span
-                    className={`font-mono text-[9px] px-1.5 py-0.5 rounded-full font-semibold border ${
-                      isDiwali
-                        ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
-                        : "bg-[var(--bg-secondary)] text-[var(--text-muted)] border-[var(--border-subtle)]"
-                    }`}
-                  >
+                  <span className="font-mono text-[9px] px-1.5 py-0.5 rounded-full font-semibold border bg-[var(--bg-secondary)] text-[var(--text-muted)] border-[var(--border-subtle)]">
                     {item.badge}
                   </span>
                 )}

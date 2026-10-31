@@ -6,7 +6,7 @@ import {
   Moon,
   LayoutDashboard,
   Compass,
-  Flame,
+  Layers,
   BrainCircuit,
   TrendingUp,
   ShieldCheck,
@@ -26,9 +26,9 @@ interface HeaderProps {
 
 const VIEW_TABS = [
   { id: "overview", label: "Dashboard", icon: LayoutDashboard },
-  { id: "diwali", label: "Diwali Hub", icon: Flame, special: true },
-  { id: "explore", label: "Basins", icon: Compass },
+  { id: "basin-intel", label: "Basin Intel", icon: Compass },
   { id: "trends", label: "24h Forecast", icon: TrendingUp },
+  { id: "explore", label: "All Basins", icon: Layers },
   { id: "intelligence", label: "ML Model", icon: BrainCircuit },
   { id: "health", label: "Health Guide", icon: ShieldCheck },
   { id: "methodology", label: "About", icon: FileText },
@@ -85,8 +85,6 @@ export function Header({
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                   isActive
                     ? "bg-[var(--bg-secondary)] text-[var(--text-primary)] shadow-xs font-semibold ring-1 ring-[var(--border-hover)]"
-                    : tab.special
-                    ? "text-amber-600 dark:text-amber-400 hover:text-amber-700"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
@@ -95,8 +93,6 @@ export function Header({
                   className={
                     isActive
                       ? "text-[var(--accent-primary)]"
-                      : tab.special
-                      ? "text-amber-500"
                       : "text-[var(--text-muted)]"
                   }
                 />
