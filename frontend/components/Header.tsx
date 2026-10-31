@@ -41,7 +41,7 @@ export function Header({
   activeSection,
   onNavigate,
 }: HeaderProps) {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, mounted } = useTheme();
 
   return (
     <header className="sticky top-0 z-20 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]/95 px-4 py-3 backdrop-blur-md transition-colors sm:px-6">
@@ -106,11 +106,12 @@ export function Header({
         <div className="flex items-center gap-2">
           <button
             onClick={toggleTheme}
-            aria-label={`Switch to ${theme === "light" ? "Dark" : "Light"} mode`}
-            title={`Switch to ${theme === "light" ? "Dark" : "Light"} mode`}
+            suppressHydrationWarning
+            aria-label={`Switch to ${mounted && theme === "dark" ? "Light" : "Dark"} mode`}
+            title={`Switch to ${mounted && theme === "dark" ? "Light" : "Dark"} mode`}
             className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] hover:bg-[var(--surface-subtle)] text-[var(--text-primary)] text-xs font-medium transition-all cursor-pointer shadow-xs active:scale-95"
           >
-            {theme === "light" ? (
+            {!mounted || theme === "light" ? (
               <>
                 <Moon size={14} className="text-[var(--accent-secondary)]" />
                 <span className="hidden sm:inline">Dark</span>

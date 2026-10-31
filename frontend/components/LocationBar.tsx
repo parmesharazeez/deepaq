@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useSyncExternalStore } from "react";
 import {
   Search,
   MapPin,
@@ -21,6 +21,74 @@ interface LocationBarProps {
   className?: string;
 }
 
+let favListeners: Array<() => void> = [];
+function subscribeFav(cb: () => void) {
+  favListeners.push(cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    favListeners = favListeners.filter((l) => l !== cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+function notifyFavChange() {
+  favListeners.forEach((l) => l());
+}
+
+const DEFAULT_FAV = ["chandigarh", "delhi", "mumbai"];
+let cachedFavRaw = "";
+let cachedFavList = DEFAULT_FAV;
+
+function getFavSnapshot(): string[] {
+  try {
+    const raw = localStorage.getItem("deepaq_favourites") || "";
+    if (raw !== cachedFavRaw) {
+      cachedFavRaw = raw;
+      cachedFavList = raw ? JSON.parse(raw) : DEFAULT_FAV;
+    }
+    return cachedFavList;
+  } catch {
+    return cachedFavList;
+  }
+}
+
+function getFavServerSnapshot(): string[] {
+  return DEFAULT_FAV;
+}
+
+let recListeners: Array<() => void> = [];
+function subscribeRec(cb: () => void) {
+  recListeners.push(cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    recListeners = recListeners.filter((l) => l !== cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+function notifyRecChange() {
+  recListeners.forEach((l) => l());
+}
+
+const DEFAULT_REC = ["chandigarh", "delhi"];
+let cachedRecRaw = "";
+let cachedRecList = DEFAULT_REC;
+
+function getRecSnapshot(): string[] {
+  try {
+    const raw = localStorage.getItem("deepaq_recents") || "";
+    if (raw !== cachedRecRaw) {
+      cachedRecRaw = raw;
+      cachedRecList = raw ? JSON.parse(raw) : DEFAULT_REC;
+    }
+    return cachedRecList;
+  } catch {
+    return cachedRecList;
+  }
+}
+
+function getRecServerSnapshot(): string[] {
+  return DEFAULT_REC;
+}
+
 export function LocationBar({
   selectedCity,
   onSelectCity,
@@ -30,29 +98,13 @@ export function LocationBar({
   const [search, setSearch] = useState("");
   const [locating, setLocating] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, mounted } = useTheme();
 
-  // Favourites state (persisted)
-  const [favourites, setFavourites] = useState<string[]>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem("deepaq_favourites");
-        if (stored) return JSON.parse(stored);
-      } catch {}
-    }
-    return ["chandigarh", "delhi", "mumbai"];
-  });
+  // Favourites state (persisted via synchronized external store)
+  const favourites = useSyncExternalStore(subscribeFav, getFavSnapshot, getFavServerSnapshot);
 
-  // Recent cities state (persisted)
-  const [recents, setRecents] = useState<string[]>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem("deepaq_recents");
-        if (stored) return JSON.parse(stored);
-      } catch {}
-    }
-    return ["chandigarh", "delhi"];
-  });
+  // Recent cities state (persisted via synchronized external store)
+  const recents = useSyncExternalStore(subscribeRec, getRecSnapshot, getRecServerSnapshot);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -69,15 +121,13 @@ export function LocationBar({
 
   const toggleFavourite = (cityId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setFavourites((prev) => {
-      const next = prev.includes(cityId)
-        ? prev.filter((id) => id !== cityId)
-        : [...prev, cityId];
-      try {
-        localStorage.setItem("deepaq_favourites", JSON.stringify(next));
-      } catch {}
-      return next;
-    });
+    const next = favourites.includes(cityId)
+      ? favourites.filter((id) => id !== cityId)
+      : [...favourites, cityId];
+    try {
+      localStorage.setItem("deepaq_favourites", JSON.stringify(next));
+    } catch {}
+    notifyFavChange();
   };
 
   const handleSelect = (city: CityOption) => {
@@ -86,14 +136,12 @@ export function LocationBar({
     setSearch("");
 
     // Add to recents
-    setRecents((prev) => {
-      const filtered = prev.filter((id) => id !== city.id);
-      const next = [city.id, ...filtered].slice(0, 5);
-      try {
-        localStorage.setItem("deepaq_recents", JSON.stringify(next));
-      } catch {}
-      return next;
-    });
+    const filtered = recents.filter((id) => id !== city.id);
+    const next = [city.id, ...filtered].slice(0, 5);
+    try {
+      localStorage.setItem("deepaq_recents", JSON.stringify(next));
+    } catch {}
+    notifyRecChange();
   };
 
   const handleGeolocation = () => {
@@ -327,11 +375,12 @@ export function LocationBar({
         {/* Theme Toggle (Warm Editorial Light vs Obsidian Dark) */}
         <button
           onClick={toggleTheme}
+          suppressHydrationWarning
           className="p-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:border-[var(--border-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer shadow-xs"
-          title={`Switch to ${theme === "light" ? "Obsidian Dark" : "Warm Editorial Light"} theme`}
+          title={`Switch to ${mounted && theme === "dark" ? "Warm Editorial Light" : "Obsidian Dark"} theme`}
           aria-label="Toggle theme"
         >
-          {theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
+          {!mounted || theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
         </button>
       </div>
     </div>

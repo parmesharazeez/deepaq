@@ -55,7 +55,7 @@ export function Sidebar({
   onOpenWelcome,
 }: SidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, mounted } = useTheme();
 
   const handleNavClick = (id: string) => {
     onNavigate(id);
@@ -182,10 +182,11 @@ export function Sidebar({
           <div className="flex flex-col items-center gap-2 py-1">
             <button
               onClick={toggleTheme}
-              title={`Switch to ${theme === "light" ? "Dark" : "Light"} Mode`}
+              suppressHydrationWarning
+              title={`Switch to ${mounted && theme === "dark" ? "Light" : "Dark"} Mode`}
               className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] cursor-pointer"
             >
-              {theme === "light" ? <Moon size={14} /> : <Sun size={14} className="text-amber-400" />}
+              {!mounted || theme === "light" ? <Moon size={14} /> : <Sun size={14} className="text-amber-400" />}
             </button>
             <span
               className={`h-2 w-2 rounded-full ${
@@ -213,15 +214,16 @@ export function Sidebar({
             {/* Theme switcher button in expanded sidebar */}
             <button
               onClick={toggleTheme}
+              suppressHydrationWarning
               className="w-full flex items-center justify-between px-3 py-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] hover:bg-[var(--surface-subtle)] text-xs text-[var(--text-primary)] font-medium transition-all cursor-pointer shadow-xs"
             >
               <span className="flex items-center gap-2">
-                {theme === "light" ? (
+                {!mounted || theme === "light" ? (
                   <Moon size={14} className="text-[var(--accent-secondary)]" />
                 ) : (
                   <Sun size={14} className="text-amber-400" />
                 )}
-                <span className="capitalize">{theme === "light" ? "Switch to Dark" : "Switch to Light"}</span>
+                <span className="capitalize">{mounted && theme === "dark" ? "Switch to Light" : "Switch to Dark"}</span>
               </span>
               <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">MODE</span>
             </button>
@@ -239,9 +241,11 @@ export function Sidebar({
         <div className="flex items-center gap-2">
           <button
             onClick={toggleTheme}
+            suppressHydrationWarning
+            aria-label="Toggle theme"
             className="p-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] text-[var(--text-primary)] cursor-pointer"
           >
-            {theme === "light" ? <Moon size={15} /> : <Sun size={15} className="text-amber-400" />}
+            {!mounted || theme === "light" ? <Moon size={15} /> : <Sun size={15} className="text-amber-400" />}
           </button>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}

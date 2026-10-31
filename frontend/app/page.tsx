@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import {
   MapPin,
   ArrowRight,
@@ -33,33 +33,52 @@ import { CITIES_DIRECTORY, CityOption } from "../lib/constants";
 
 type ScreenState = "welcome" | "city-select" | "transition" | "dashboard";
 
-export default function Home() {
-  // City state
-  const [selectedCity, setSelectedCity] = useState<CityOption>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem("deepaq_selected_city");
-        if (stored) {
-          const parsed: CityOption = JSON.parse(stored);
-          if (parsed && parsed.name) return parsed;
-        }
-      } catch {}
-    }
-    return CITIES_DIRECTORY[0];
-  });
+let cityListeners: Array<() => void> = [];
 
-  const [savedCityName, setSavedCityName] = useState<string | null>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem("deepaq_selected_city");
-        if (stored) {
-          const parsed: CityOption = JSON.parse(stored);
-          if (parsed && parsed.name) return parsed.name;
+function subscribeCity(callback: () => void) {
+  cityListeners.push(callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    cityListeners = cityListeners.filter((l) => l !== callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+function notifyCityChange() {
+  cityListeners.forEach((l) => l());
+}
+
+let cachedCityRaw = "";
+let cachedCityObj: CityOption = CITIES_DIRECTORY[0];
+
+function getCitySnapshot(): CityOption {
+  try {
+    const raw = localStorage.getItem("deepaq_selected_city") || "";
+    if (raw !== cachedCityRaw) {
+      cachedCityRaw = raw;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.name) {
+          cachedCityObj = parsed;
         }
-      } catch {}
+      } else {
+        cachedCityObj = CITIES_DIRECTORY[0];
+      }
     }
-    return null;
-  });
+    return cachedCityObj;
+  } catch {
+    return cachedCityObj;
+  }
+}
+
+function getCityServerSnapshot(): CityOption {
+  return CITIES_DIRECTORY[0];
+}
+
+export default function Home() {
+  // City state - Synchronized external store prevents SSR hydration mismatch
+  const selectedCity = useSyncExternalStore(subscribeCity, getCitySnapshot, getCityServerSnapshot);
+  const savedCityName = selectedCity?.name ?? null;
 
   // Screen state machine: Production defaults directly to the main dashboard
   const [screen, setScreen] = useState<ScreenState>("dashboard");
@@ -91,11 +110,10 @@ export default function Home() {
 
   // Handle City Selection
   const handleSelectCity = (city: CityOption) => {
-    setSelectedCity(city);
-    setSavedCityName(city.name);
     try {
       localStorage.setItem("deepaq_selected_city", JSON.stringify(city));
     } catch {}
+    notifyCityChange();
   };
 
   const handleStartFromWelcome = (city: CityOption) => {
