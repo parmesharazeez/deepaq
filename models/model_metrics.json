@@ -1,0 +1,12 @@
+{
+    "model": "RandomForestRegressor",
+    "target": "PM2.5 one hour ahead",
+    "training_records": 1746,
+    "testing_records": 437,
+    "random_forest_mae": 2.962,
+    "random_forest_rmse": 4.178,
+    "baseline_mae": 3.61,
+    "baseline_rmse": 5.148,
+    "data_source": "Open-Meteo model-derived historical estimates",
+    "validation": "Chronological 80/20 split"
+}

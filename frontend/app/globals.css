@@ -1,0 +1,184 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+:root, [data-theme="light"] {
+  --bg-primary: #FAF8F5;
+  --bg-secondary: #FFFFFF;
+  --surface-elevated: #F3F1EC;
+  --surface-subtle: #ECEAE3;
+  --accent-primary: #3D5A45;
+  --accent-subtle: #EBF0EC;
+  --accent-secondary: #4E6578;
+  --text-primary: #1A1B18;
+  --text-secondary: #5E6058;
+  --text-muted: #8C8E84;
+  --border-subtle: #E7E5DF;
+  --border-hover: #D6D3CB;
+}
+
+[data-theme="dark"], .dark {
+  --bg-primary: #111210;
+  --bg-secondary: #191A17;
+  --surface-elevated: #20211E;
+  --surface-subtle: #262723;
+  --accent-primary: #A5B39A;
+  --accent-subtle: rgba(165, 179, 154, 0.12);
+  --accent-secondary: #7E92A0;
+  --text-primary: #F1F0E9;
+  --text-secondary: #A5A69E;
+  --text-muted: #70716A;
+  --border-subtle: #30312C;
+  --border-hover: #3E4039;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::selection {
+  background: rgba(61, 90, 69, 0.18);
+  color: inherit;
+}
+
+.dark ::selection {
+  background: rgba(165, 179, 154, 0.24);
+  color: #F1F0E9;
+}
+
+/* Minimalist technical numeral helper */
+.telemetry-numeral {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.technical-label {
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+/* Custom Minimalist Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Leaflet Overrides for Apple-grade Light & Dark Aesthetic */
+.leaflet-container {
+  background-color: var(--bg-primary) !important;
+  font-family: var(--font-geist-sans), sans-serif !important;
+}
+
+.leaflet-bar {
+  border: 1px solid var(--border-subtle) !important;
+  background: var(--bg-secondary) !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.leaflet-bar a {
+  background-color: transparent !important;
+  color: var(--text-secondary) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+}
+
+.leaflet-bar a:hover {
+  background-color: var(--surface-elevated) !important;
+  color: var(--text-primary) !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
+  padding: 0 !important;
+}
+
+.dark .leaflet-popup-content-wrapper {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45) !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+.leaflet-popup-content {
+  margin: 10px 14px !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-container .leaflet-control-attribution {
+  background: var(--bg-secondary) !important;
+  color: var(--text-muted) !important;
+  font-size: 8.5px !important;
+  font-family: var(--font-geist-mono), monospace !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  border-radius: 4px 0 0 0 !important;
+  opacity: 0.85;
+}
+
+.leaflet-container .leaflet-control-attribution a {
+  color: var(--text-secondary) !important;
+}
+
+/* OpenStreetMap Editorial Tile Filters */
+.deepaq-osm-dark .leaflet-tile {
+  filter: brightness(0.72) invert(1) contrast(1.6) sepia(0.15) hue-rotate(50deg) saturate(0.22);
+}
+
+.deepaq-osm-light .leaflet-tile {
+  filter: saturate(0.85) contrast(1.05) brightness(1.02);
+}
+
+/* Leaflet Scale Line */
+.leaflet-control-scale-line {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-top: none !important;
+  color: var(--text-secondary) !important;
+  font-family: var(--font-geist-mono), monospace !important;
+  font-size: 9px !important;
+  padding: 1px 6px !important;
+  line-height: 1.2 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Subdued pulse animation for location indicator */
+@keyframes deepaq-beacon-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
