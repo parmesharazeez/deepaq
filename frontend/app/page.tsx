@@ -2,18 +2,18 @@
 
 import React, { useState } from "react";
 import {
-  AlertTriangle,
-  RefreshCw,
   MapPin,
   ArrowRight,
+  AlertCircle,
 } from "lucide-react";
 import { useDashboardData } from "../hooks/useDashboardData";
 import { Sidebar } from "../components/Sidebar";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 
-// Dedicated Intelligence Views
+// Dedicated Platform Views
 import { HomeView } from "../components/views/HomeView";
+import { DiwaliView } from "../components/views/DiwaliView";
 import { ExploreView } from "../components/views/ExploreView";
 import { IntelligenceView } from "../components/views/IntelligenceView";
 import { TrendsView } from "../components/views/TrendsView";
@@ -21,7 +21,10 @@ import { HealthView } from "../components/views/HealthView";
 import { MethodologyView } from "../components/views/MethodologyView";
 import { GeographicIntelligence } from "../components/GeographicIntelligence";
 
-// Cinematic Entry Experience Components
+// Educational Loading Experience with Respiratory Facts
+import { EducationalLoader } from "../components/ui/EducationalLoader";
+
+// Cinematic Entry Experience Components (Optional on-demand access)
 import { AtmosphericBackground } from "../components/entry/AtmosphericBackground";
 import { WelcomeScreen } from "../components/entry/WelcomeScreen";
 import { CitySelectionScreen } from "../components/entry/CitySelectionScreen";
@@ -58,16 +61,8 @@ export default function Home() {
     return null;
   });
 
-  // Screen state machine: if user has already visited, go directly to dashboard
-  const [screen, setScreen] = useState<ScreenState>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const visited = localStorage.getItem("deepaq_visited");
-        if (visited === "true") return "dashboard";
-      } catch {}
-    }
-    return "dashboard"; // Production default: fast direct entry
-  });
+  // Screen state machine: Production defaults directly to the main dashboard
+  const [screen, setScreen] = useState<ScreenState>("dashboard");
 
   // Active view section
   const [activeSection, setActiveSection] = useState("overview");
@@ -81,14 +76,9 @@ export default function Home() {
     health,
     forecastHours,
     loading,
-    refreshing,
     error,
-    lastUpdated,
-    latencyMs,
-    autoRefresh,
-    setAutoRefresh,
-    setForecastHours,
     refreshData,
+    setForecastHours,
   } = useDashboardData(selectedCity);
 
   // Switch view tabs smoothly
@@ -105,7 +95,6 @@ export default function Home() {
     setSavedCityName(city.name);
     try {
       localStorage.setItem("deepaq_selected_city", JSON.stringify(city));
-      localStorage.setItem("deepaq_visited", "true");
     } catch {}
   };
 
@@ -121,7 +110,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] flex flex-col font-sans transition-colors duration-200">
-      {/* SCREEN 1: WELCOME SCREEN */}
+      {/* GENUINE LOADING SCREEN: PM2.5 RESPIRATORY HEALTH EDUCATION */}
+      {loading && !dashboard && (
+        <EducationalLoader message={`Retrieving atmospheric telemetry for ${selectedCity.name}...`} />
+      )}
+
+      {/* SCREEN 1: WELCOME SCREEN (ACCESSIBLE VIA LOGO CLICK) */}
       {screen === "welcome" && (
         <>
           <AtmosphericBackground />
@@ -154,26 +148,20 @@ export default function Home() {
             isDataReady={isDataReady}
             error={error}
             onRetry={refreshData}
-            onComplete={() => {
-              try {
-                localStorage.setItem("deepaq_visited", "true");
-              } catch {}
-              setScreen("dashboard");
-            }}
+            onComplete={() => setScreen("dashboard")}
             onBackToCitySelect={() => setScreen("city-select")}
           />
         </>
       )}
 
-      {/* SCREEN 4: PRODUCTION ENVIRONMENTAL INTELLIGENCE PLATFORM */}
+      {/* SCREEN 4: PRODUCTION HACKATHON-WINNING ENVIRONMENTAL PLATFORM */}
       {screen === "dashboard" && (
         <div className="relative min-h-screen bg-[var(--bg-primary)] flex flex-col">
-          {/* Sidebar Rail */}
+          {/* Navigation Sidebar Rail */}
           <Sidebar
             activeSection={activeSection}
             onNavigate={handleNavigate}
             apiHealthy={apiHealthy}
-            latencyMs={latencyMs}
             collapsed={sidebarCollapsed}
             onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
             selectedCity={selectedCity}
@@ -181,40 +169,34 @@ export default function Home() {
             onOpenWelcome={() => setScreen("welcome")}
           />
 
-          {/* Main Content Area */}
+          {/* Main Dashboard Canvas Area */}
           <div
             className={`flex flex-col min-h-screen pt-12 lg:pt-0 transition-all duration-300 ${
               sidebarCollapsed ? "lg:pl-16" : "lg:pl-60"
             }`}
           >
-            {/* Top Header */}
+            {/* Minimalist Top Header (Zero Developer Buttons) */}
             <Header
               apiHealthy={apiHealthy}
-              refreshing={refreshing}
-              lastUpdated={lastUpdated}
-              latencyMs={latencyMs}
-              autoRefresh={autoRefresh}
-              onRefresh={refreshData}
-              onToggleAutoRefresh={() => setAutoRefresh(!autoRefresh)}
               selectedCity={selectedCity}
               onSelectCity={handleSelectCity}
               activeSection={activeSection}
               onNavigate={handleNavigate}
             />
 
-            {/* Non-Pilot City ML Scope Notice */}
+            {/* Non-Pilot City Machine Learning Notice */}
             {!selectedCity.pilot && (
               <div className="max-w-[1550px] w-full mx-auto px-4 sm:px-6 md:px-7 pt-4">
-                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-3.5 text-xs font-mono text-[var(--text-secondary)] flex flex-wrap items-center justify-between gap-3 shadow-xs">
+                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-3.5 text-xs text-[var(--text-secondary)] flex flex-wrap items-center justify-between gap-3 shadow-xs">
                   <div className="flex items-center gap-2">
                     <MapPin size={15} className="text-[var(--accent-primary)] shrink-0" />
                     <span>
-                      <strong className="text-[var(--text-primary)]">Domain Scope ({selectedCity.name}):</strong> Live atmospheric telemetry is actively ingested for {selectedCity.name}. ML Random Forest weights are calibrated on the <strong>Chandigarh reference basin</strong>.
+                      <strong className="text-[var(--text-primary)]">Domain Scope ({selectedCity.name}):</strong> Live atmospheric telemetry is actively feeding from Open-Meteo. Our primary Random Forest weights are trained on the <strong>Chandigarh reference basin</strong>.
                     </span>
                   </div>
                   <button
                     onClick={() => handleSelectCity(CITIES_DIRECTORY[0])}
-                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[var(--surface-elevated)] text-[var(--text-primary)] border border-[var(--border-subtle)] hover:bg-[var(--surface-subtle)] transition-colors cursor-pointer text-[11px] font-medium"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--surface-elevated)] text-[var(--text-primary)] border border-[var(--border-subtle)] hover:bg-[var(--surface-subtle)] transition-colors cursor-pointer text-xs font-semibold"
                   >
                     <span>Switch to Chandigarh Pilot</span>
                     <ArrowRight size={13} />
@@ -223,35 +205,17 @@ export default function Home() {
               </div>
             )}
 
-            {/* Dashboard Canvas */}
-            <main className="flex-1 px-4 sm:px-6 md:px-7 py-5 space-y-6 max-w-[1550px] w-full mx-auto">
-              {/* Telemetry Alert (if fetch failed) */}
+            {/* Main Content View Container */}
+            <main className="flex-1 px-4 sm:px-6 md:px-7 py-6 space-y-6 max-w-[1550px] w-full mx-auto">
+              {/* Subtle Stale Telemetry Notice (If offline) */}
               {error && (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#C26765]/30 bg-[var(--bg-secondary)] p-3.5 text-[#C26765]">
-                  <div className="flex items-center gap-2.5">
-                    <AlertTriangle size={16} className="text-[#C26765] shrink-0" />
-                    <div className="text-xs font-mono">
-                      <strong className="font-semibold text-[var(--text-primary)]">
-                        Telemetry Notice:
-                      </strong>{" "}
-                      {error}
-                    </div>
-                  </div>
-                  <button
-                    onClick={refreshData}
-                    disabled={refreshing}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] text-xs font-mono text-[var(--text-primary)] hover:bg-[var(--surface-subtle)] transition-all disabled:opacity-50 cursor-pointer"
-                  >
-                    <RefreshCw
-                      size={11}
-                      className={refreshing ? "animate-spin" : ""}
-                    />
-                    <span>Retry Sync</span>
-                  </button>
+                <div className="flex items-center gap-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-300 font-medium">
+                  <AlertCircle size={15} className="text-amber-600 shrink-0" />
+                  <span>Showing cached observation. Reconnecting to atmospheric feed...</span>
                 </div>
               )}
 
-              {/* VIEW 1: OVERVIEW / HOME VIEW */}
+              {/* VIEW 1: OVERVIEW / HOMEPAGE */}
               {activeSection === "overview" && (
                 <HomeView
                   city={selectedCity}
@@ -262,7 +226,28 @@ export default function Home() {
                 />
               )}
 
-              {/* VIEW 2: MULTI-BASIN EXPLORER */}
+              {/* VIEW 2: DIWALI ATMOSPHERIC SCIENCE & FESTIVAL HUB */}
+              {activeSection === "diwali" && (
+                <DiwaliView
+                  city={selectedCity}
+                  dashboard={dashboard}
+                  prediction={prediction}
+                  onNavigateTab={handleNavigate}
+                />
+              )}
+
+              {/* VIEW 3: 24-HOUR & 72-HOUR FORECAST TRENDS */}
+              {activeSection === "trends" && (
+                <TrendsView
+                  city={selectedCity}
+                  dashboard={dashboard}
+                  forecast={forecast}
+                  forecastHours={forecastHours}
+                  onSelectHours={setForecastHours}
+                />
+              )}
+
+              {/* VIEW 4: MULTI-BASIN ALL-INDIA EXPLORER */}
               {activeSection === "explore" && (
                 <ExploreView
                   currentCity={selectedCity}
@@ -274,7 +259,7 @@ export default function Home() {
                 />
               )}
 
-              {/* VIEW 3: ML INTELLIGENCE & BOUNDARY LAYER PHYSICS */}
+              {/* VIEW 5: ML PREDICTION & BOUNDARY LAYER PHYSICS */}
               {activeSection === "intelligence" && (
                 <IntelligenceView
                   city={selectedCity}
@@ -285,18 +270,7 @@ export default function Home() {
                 />
               )}
 
-              {/* VIEW 4: TRENDS & 72-HOUR PROJECTION */}
-              {activeSection === "trends" && (
-                <TrendsView
-                  city={selectedCity}
-                  dashboard={dashboard}
-                  forecast={forecast}
-                  forecastHours={forecastHours}
-                  onSelectHours={setForecastHours}
-                />
-              )}
-
-              {/* VIEW 5: PUBLIC HEALTH & ACTION PROTOCOLS */}
+              {/* VIEW 6: PUBLIC HEALTH & ACTION PROTOCOLS */}
               {activeSection === "health" && (
                 <HealthView
                   city={selectedCity}
@@ -304,7 +278,7 @@ export default function Home() {
                 />
               )}
 
-              {/* VIEW 6: SPATIAL GEOGRAPHY & GIS MAPPING */}
+              {/* VIEW 7: SPATIAL GEOGRAPHY & GIS MAPPING */}
               {activeSection === "geography" && (
                 <GeographicIntelligence
                   currentPM25={currentPM25}
@@ -312,13 +286,13 @@ export default function Home() {
                 />
               )}
 
-              {/* VIEW 7: SCIENTIFIC METHODOLOGY & MODEL CARD */}
+              {/* VIEW 8: SCIENTIFIC METHODOLOGY & MODEL CARD */}
               {activeSection === "methodology" && (
                 <MethodologyView />
               )}
             </main>
 
-            {/* Global Footer */}
+            {/* Global Editorial Footer */}
             <Footer />
           </div>
         </div>

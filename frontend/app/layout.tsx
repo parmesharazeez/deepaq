@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DEEPAQ — Environmental Intelligence Platform",
+  title: "DEEPAQ — Atmospheric Intelligence & PM2.5 Prediction",
   description:
     "Understand the air. Anticipate the risk. Make better decisions. Multi-basin environmental telemetry, boundary layer meteorological physics, and 1-hour Random Forest predictions across India.",
   icons: {
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     apple: "/deepaq-icon.png",
   },
   openGraph: {
-    title: "DEEPAQ — Environmental Intelligence Platform",
+    title: "DEEPAQ — Atmospheric Intelligence & PM2.5 Prediction",
     description: "Understand the air. Anticipate the risk. Make better decisions.",
     siteName: "DEEPAQ",
     type: "website",
@@ -43,6 +43,27 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var t = localStorage.getItem('deepaq_theme') || 'light';
+                  document.documentElement.setAttribute('data-theme', t);
+                  if (t === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.classList.remove('light');
+                  } else {
+                    document.documentElement.classList.add('light');
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-200">
         <ThemeProvider>
           {children}

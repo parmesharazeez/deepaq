@@ -19,25 +19,41 @@ const ThemeContext = createContext<ThemeContextType>({
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("deepaq_theme") as Theme;
-      if (saved === "light" || saved === "dark") return saved;
+      try {
+        const saved = localStorage.getItem("deepaq_theme") as Theme;
+        if (saved === "light" || saved === "dark") return saved;
+      } catch {}
     }
     return "light";
   });
 
-  useEffect(() => {
+  const applyTheme = (t: Theme) => {
+    if (typeof document === "undefined") return;
     const root = document.documentElement;
-    root.setAttribute("data-theme", theme);
-    if (theme === "dark") {
+    const body = document.body;
+
+    root.setAttribute("data-theme", t);
+    body.setAttribute("data-theme", t);
+
+    if (t === "dark") {
       root.classList.add("dark");
       root.classList.remove("light");
+      body.classList.add("dark");
+      body.classList.remove("light");
     } else {
       root.classList.add("light");
       root.classList.remove("dark");
+      body.classList.add("light");
+      body.classList.remove("dark");
     }
+
     try {
-      localStorage.setItem("deepaq_theme", theme);
+      localStorage.setItem("deepaq_theme", t);
     } catch {}
+  };
+
+  useEffect(() => {
+    applyTheme(theme);
   }, [theme]);
 
   const setTheme = (t: Theme) => {

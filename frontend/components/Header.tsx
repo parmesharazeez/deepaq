@@ -1,34 +1,23 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
-  RefreshCw,
-  Clock,
-  Layers,
-  MapPin,
   Sun,
   Moon,
   LayoutDashboard,
   Compass,
+  Flame,
   BrainCircuit,
   TrendingUp,
   ShieldCheck,
   FileText,
 } from "lucide-react";
-import { StatusDot } from "./ui/StatusDot";
 import { CityOption } from "../lib/constants";
-import { formatRelativeTime } from "../lib/utils";
 import { LocationBar } from "./LocationBar";
 import { useTheme } from "../hooks/useTheme";
 
 interface HeaderProps {
   apiHealthy: boolean;
-  refreshing: boolean;
-  lastUpdated: Date | null;
-  latencyMs: number | null;
-  autoRefresh: boolean;
-  onRefresh: () => void;
-  onToggleAutoRefresh: () => void;
   selectedCity: CityOption;
   onSelectCity: (city: CityOption) => void;
   activeSection: string;
@@ -36,58 +25,56 @@ interface HeaderProps {
 }
 
 const VIEW_TABS = [
-  { id: "overview", label: "Overview", icon: LayoutDashboard },
+  { id: "overview", label: "Dashboard", icon: LayoutDashboard },
+  { id: "diwali", label: "Diwali Hub", icon: Flame, special: true },
   { id: "explore", label: "Basins", icon: Compass },
-  { id: "intelligence", label: "ML Intel", icon: BrainCircuit },
-  { id: "trends", label: "Trends", icon: TrendingUp },
-  { id: "health", label: "Health", icon: ShieldCheck },
-  { id: "geography", label: "Map", icon: MapPin },
-  { id: "methodology", label: "Methodology", icon: FileText },
+  { id: "trends", label: "24h Forecast", icon: TrendingUp },
+  { id: "intelligence", label: "ML Model", icon: BrainCircuit },
+  { id: "health", label: "Health Guide", icon: ShieldCheck },
+  { id: "methodology", label: "About", icon: FileText },
 ];
 
 export function Header({
   apiHealthy,
-  refreshing,
-  lastUpdated,
-  latencyMs,
-  autoRefresh,
-  onRefresh,
-  onToggleAutoRefresh,
   selectedCity,
   onSelectCity,
   activeSection,
   onNavigate,
 }: HeaderProps) {
-  const [, setTicker] = useState(0);
   const { theme, toggleTheme } = useTheme();
 
-  // Re-render for relative sync time
-  useEffect(() => {
-    const timer = setInterval(() => setTicker((t) => t + 1), 5000);
-    return () => clearInterval(timer);
-  }, []);
-
   return (
-    <header className="sticky top-0 z-20 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]/95 px-4 py-2.5 backdrop-blur-md transition-all sm:px-6">
+    <header className="sticky top-0 z-20 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]/95 px-4 py-3 backdrop-blur-md transition-colors sm:px-6">
       <div className="mx-auto flex max-w-[1550px] flex-wrap items-center justify-between gap-3">
-        {/* Left: Location Autocomplete Bar */}
+        {/* Left: Location Selector & Indicator */}
         <div className="flex items-center gap-3">
           <LocationBar
             selectedCity={selectedCity}
             onSelectCity={onSelectCity}
           />
 
-          <span className="hidden xl:inline-block h-3.5 w-px bg-[var(--border-subtle)]" />
-
-          {/* Pilot Grid Tag */}
-          <div className="hidden xl:flex items-center gap-1.5 font-mono text-[10.5px] text-[var(--text-muted)]">
-            <Layers size={11} className="text-[var(--text-secondary)]" />
-            <span>GRID: ~11km ECMWF/CAMS</span>
+          {/* Simple Live status badge (Zero developer controls or sync counters) */}
+          <div
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+              apiHealthy
+                ? "bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400"
+                : "bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-400"
+            }`}
+            title={apiHealthy ? "Live atmospheric observations actively feeding ML engine" : "Reconnecting to atmospheric telemetry..."}
+          >
+            <span
+              className={`h-2 w-2 rounded-full ${
+                apiHealthy ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+              }`}
+            />
+            <span className="font-mono text-[11px] tracking-wide uppercase font-semibold">
+              {apiHealthy ? "LIVE" : "SYNCING"}
+            </span>
           </div>
         </div>
 
-        {/* Center: Top View Switcher Navigation Pills (hidden on smaller screens where sidebar or bottom bar handles it) */}
-        <nav className="hidden 2xl:flex items-center gap-1 p-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)]">
+        {/* Center: Top Segment Navigation Tabs */}
+        <nav className="hidden xl:flex items-center gap-1 p-1 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)]">
           {VIEW_TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeSection === tab.id;
@@ -95,15 +82,23 @@ export function Header({
               <button
                 key={tab.id}
                 onClick={() => onNavigate(tab.id)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                   isActive
-                    ? "bg-[var(--bg-secondary)] text-[var(--text-primary)] shadow-xs font-semibold"
+                    ? "bg-[var(--bg-secondary)] text-[var(--text-primary)] shadow-xs font-semibold ring-1 ring-[var(--border-hover)]"
+                    : tab.special
+                    ? "text-amber-600 dark:text-amber-400 hover:text-amber-700"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
                 <Icon
-                  size={13}
-                  className={isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"}
+                  size={14}
+                  className={
+                    isActive
+                      ? "text-[var(--accent-primary)]"
+                      : tab.special
+                      ? "text-amber-500 animate-pulse"
+                      : "text-[var(--text-muted)]"
+                  }
                 />
                 <span>{tab.label}</span>
               </button>
@@ -111,82 +106,25 @@ export function Header({
           })}
         </nav>
 
-        {/* Right: Telemetry Connectivity, Sync, Theme Toggle & Refresh */}
-        <div className="flex items-center flex-wrap gap-2 sm:gap-2.5">
-          {/* Theme switcher button */}
+        {/* Right: Theme Switcher Toggle (Comfortable, large, clear) */}
+        <div className="flex items-center gap-2">
           <button
             onClick={toggleTheme}
+            aria-label={`Switch to ${theme === "light" ? "Dark" : "Light"} mode`}
             title={`Switch to ${theme === "light" ? "Dark" : "Light"} mode`}
-            className="flex items-center p-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] hover:bg-[var(--surface-subtle)] text-[var(--text-primary)] text-xs font-medium transition-all cursor-pointer shadow-xs active:scale-95"
           >
             {theme === "light" ? (
-              <Moon size={14} className="text-[var(--text-secondary)]" />
+              <>
+                <Moon size={14} className="text-[var(--accent-secondary)]" />
+                <span className="hidden sm:inline">Dark</span>
+              </>
             ) : (
-              <Sun size={14} className="text-amber-400" />
+              <>
+                <Sun size={14} className="text-amber-400" />
+                <span className="hidden sm:inline">Light</span>
+              </>
             )}
-          </button>
-
-          {/* API Connectivity Indicator */}
-          <div
-            className="flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] px-2.5 py-1 text-[10px] font-mono"
-            title={`API Telemetry | Latency: ${latencyMs ?? "--"}ms`}
-          >
-            <StatusDot status={apiHealthy ? "online" : "error"} size="sm" />
-            <span className="hidden sm:inline text-[var(--text-muted)]">API:</span>
-            <span className="font-medium text-[var(--text-primary)]">
-              {apiHealthy ? "ONLINE" : "OFFLINE"}
-            </span>
-            {latencyMs !== null && (
-              <span className="text-[var(--text-muted)] ml-0.5">
-                {latencyMs}ms
-              </span>
-            )}
-          </div>
-
-          {/* Last Sync Time */}
-          <div
-            className="flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] px-2.5 py-1 text-[10px] font-mono text-[var(--text-secondary)]"
-            title={lastUpdated ? `Exact: ${lastUpdated.toLocaleTimeString()}` : "Not synced"}
-          >
-            <Clock size={11} className="text-[var(--text-muted)]" />
-            <span className="hidden sm:inline text-[var(--text-muted)]">SYNC:</span>
-            <span className="text-[var(--text-primary)] font-medium">
-              {formatRelativeTime(lastUpdated)}
-            </span>
-          </div>
-
-          {/* Auto Refresh Toggle */}
-          <button
-            onClick={onToggleAutoRefresh}
-            className={`hidden lg:flex items-center gap-1.5 rounded-lg border px-2 py-1 text-[10px] font-mono transition-colors cursor-pointer ${
-              autoRefresh
-                ? "border-[var(--border-hover)] bg-[var(--surface-elevated)] text-[var(--accent-primary)] font-medium"
-                : "border-[var(--border-subtle)] bg-[var(--surface-elevated)] text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
-            }`}
-            title="Auto-refresh telemetry every 60 seconds"
-          >
-            <span
-              className={`h-1.5 w-1.5 rounded-full ${
-                autoRefresh ? "bg-[var(--accent-primary)]" : "bg-[var(--text-muted)]"
-              }`}
-            />
-            <span>LIVE</span>
-          </button>
-
-          {/* Refresh Action */}
-          <button
-            onClick={onRefresh}
-            disabled={refreshing}
-            className="flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] hover:bg-[var(--surface-subtle)] active:scale-95 px-3 py-1 text-xs font-mono font-medium text-[var(--text-primary)] transition-all disabled:opacity-50 cursor-pointer shadow-xs"
-            title="Fetch latest meteorological and aerosol telemetry"
-          >
-            <RefreshCw
-              size={11}
-              className={`transition-transform text-[var(--accent-primary)] ${
-                refreshing ? "animate-spin" : ""
-              }`}
-            />
-            <span>{refreshing ? "SYNCING" : "REFRESH"}</span>
           </button>
         </div>
       </div>

@@ -24,27 +24,27 @@ export function GlassCard({
   id,
 }: GlassCardProps) {
   const variantStyles = {
-    default: "border-[#30312C] bg-[#191A17]",
-    highlight: "border-[#7E92A0]/30 bg-[#191A17]",
-    emerald: "border-[#A5B39A]/25 bg-[#191A17]",
-    danger: "border-[#C26765]/30 bg-[#191A17]",
+    default: "border-[var(--border-subtle)] bg-[var(--bg-secondary)]",
+    highlight: "border-[var(--accent-secondary)]/30 bg-[var(--bg-secondary)]",
+    emerald: "border-[var(--accent-primary)]/30 bg-[var(--bg-secondary)]",
+    danger: "border-[#C26765]/30 bg-[var(--bg-secondary)]",
   }[variant];
 
   return (
     <section
       id={id}
-      className={`relative rounded-lg border transition-all ${variantStyles} ${className}`}
+      className={`relative rounded-2xl border transition-all ${variantStyles} ${className} shadow-xs text-[var(--text-primary)]`}
     >
       {(headerTitle || headerAction || headerBadge || headerSubtitle) && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#30312C] px-5 sm:px-6 py-4 bg-[#191A17]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] px-5 sm:px-6 py-4 bg-[var(--surface-elevated)] rounded-t-2xl">
           <div>
             {headerSubtitle && (
-              <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#A5A69E]">
+              <p className="text-[10px] font-mono font-medium uppercase tracking-[0.14em] text-[var(--text-muted)]">
                 {headerSubtitle}
               </p>
             )}
             {headerTitle && (
-              <h3 className="text-sm sm:text-base font-semibold tracking-tight text-[#F1F0E9] flex items-center gap-2 mt-0.5">
+              <h3 className="text-sm sm:text-base font-semibold tracking-tight text-[var(--text-primary)] flex items-center gap-2 mt-0.5">
                 {headerTitle}
               </h3>
             )}
@@ -59,7 +59,7 @@ export function GlassCard({
       <div className="p-5 sm:p-6">{children}</div>
 
       {footer && (
-        <div className="border-t border-[#30312C] px-5 sm:px-6 py-3 bg-[#151613] text-xs font-mono text-[#A5A69E]">
+        <div className="border-t border-[var(--border-subtle)] px-5 sm:px-6 py-3.5 bg-[var(--surface-elevated)] rounded-b-2xl">
           {footer}
         </div>
       )}
