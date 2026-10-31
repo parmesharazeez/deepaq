@@ -156,7 +156,7 @@ export function Sidebar({
                       isActive
                         ? "text-[var(--accent-primary)]"
                         : isDiwali
-                        ? "text-amber-500 animate-pulse"
+                        ? "text-amber-500"
                         : "text-[var(--text-muted)] group-hover:text-[var(--text-secondary)]"
                     }`}
                   />

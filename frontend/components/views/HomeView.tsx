@@ -206,24 +206,24 @@ export function HomeView({
             </div>
           </div>
 
-          {/* PRIMARY ACTION BUTTON — SIGNIFICANTLY LARGER, PROMINENT, APPLE/VERCEL QUALITY */}
-          <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-4">
+          {/* PRIMARY ACTION BUTTON — APPLE & WISPR FLOW INTERACTION QUALITY */}
+          <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             <button
               onClick={() => onNavigateTab("trends")}
-              className="group flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-[var(--accent-primary)] hover:opacity-95 text-white text-sm sm:text-base font-bold tracking-wide shadow-md transition-all active:scale-[0.98] cursor-pointer"
+              className="group flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-[var(--text-primary)] hover:opacity-90 text-[var(--bg-primary)] text-sm sm:text-base font-semibold tracking-tight transition-all active:scale-[0.99] cursor-pointer shadow-sm"
             >
               <span>Explore 24h Forecast & Action Guide</span>
               <ArrowRight
-                size={18}
-                className="transition-transform group-hover:translate-x-1"
+                size={17}
+                className="transition-transform duration-200 group-hover:translate-x-1"
               />
             </button>
 
             <button
               onClick={() => onNavigateTab("diwali")}
-              className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/15 text-amber-800 dark:text-amber-300 text-sm font-semibold transition-all cursor-pointer"
+              className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] hover:bg-[var(--surface-subtle)] text-[var(--text-primary)] text-sm font-semibold transition-all active:scale-[0.99] cursor-pointer"
             >
-              <Flame size={16} className="text-amber-500 animate-pulse" />
+              <Flame size={16} className="text-amber-600 dark:text-amber-400" />
               <span>Diwali Festival Problem Statement</span>
             </button>
           </div>
@@ -231,7 +231,7 @@ export function HomeView({
           {/* Subtle Indication that More Intelligence is Below */}
           <div className="pt-4 flex items-center justify-center sm:justify-start gap-1.5 text-xs text-[var(--text-muted)] font-mono">
             <span>Scroll below for 5 atmospheric sensors & machine learning forecast</span>
-            <ChevronDown size={14} className="animate-bounce" />
+            <ChevronDown size={14} className="text-[var(--text-muted)]" />
           </div>
         </div>
       </section>

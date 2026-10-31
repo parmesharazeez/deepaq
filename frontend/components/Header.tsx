@@ -64,7 +64,7 @@ export function Header({
           >
             <span
               className={`h-2 w-2 rounded-full ${
-                apiHealthy ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+                apiHealthy ? "bg-emerald-500" : "bg-amber-500"
               }`}
             />
             <span className="font-mono text-[11px] tracking-wide uppercase font-semibold">
@@ -96,7 +96,7 @@ export function Header({
                     isActive
                       ? "text-[var(--accent-primary)]"
                       : tab.special
-                      ? "text-amber-500 animate-pulse"
+                      ? "text-amber-500"
                       : "text-[var(--text-muted)]"
                   }
                 />

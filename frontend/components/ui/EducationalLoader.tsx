@@ -79,14 +79,14 @@ export function EducationalLoader({ message = "Calibrating atmospheric intellige
               priority
               className="object-contain"
             />
-            <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-[var(--accent-primary)] ring-2 ring-[var(--bg-secondary)] animate-pulse" />
+            <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-[var(--accent-primary)] ring-2 ring-[var(--bg-secondary)]" />
           </div>
         </div>
 
         {/* Status Heading */}
         <div className="space-y-1">
           <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-[var(--accent-primary)] font-semibold flex items-center justify-center gap-1.5">
-            <Activity size={12} className="animate-spin" />
+            <Activity size={12} className="text-[var(--accent-primary)]" />
             <span>DEEPAQ Atmospheric Engine</span>
           </span>
           <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-[var(--text-primary)]">

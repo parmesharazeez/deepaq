@@ -177,7 +177,7 @@ export function LocationBar({
 
         {/* Dropdown Menu */}
         {open && (
-          <div className="absolute top-full left-0 mt-2 w-80 sm:w-96 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] shadow-xl z-50 p-3 space-y-3 animate-in fade-in zoom-in-95 duration-150">
+          <div className="absolute top-full left-0 mt-2 w-80 sm:w-96 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] shadow-xl z-50 p-3 space-y-3 transition-all duration-150 ease-out">
             {/* Search Input */}
             <div className="relative">
               <Search

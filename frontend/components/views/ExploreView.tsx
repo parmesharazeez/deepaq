@@ -163,7 +163,7 @@ export function ExploreView({ currentCity, onSelectCity, onNavigateHome }: Explo
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
               <span className="text-[11px] font-semibold tracking-wider uppercase text-[var(--accent-primary)]">
                 National Air Basin Intelligence
               </span>

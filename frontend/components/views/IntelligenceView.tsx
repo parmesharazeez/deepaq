@@ -119,7 +119,7 @@ export function IntelligenceView({
         <div className="mt-6 p-5 sm:p-6 rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-subtle)]/40 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
               <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-primary)]">
                 1-Hour Ahead ML Anticipation
               </span>

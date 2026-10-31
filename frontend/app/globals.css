@@ -36,6 +36,13 @@ body.dark {
   --border-hover: #3A3E36;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+  -webkit-overflow-scrolling: touch;
+  text-size-adjust: 100%;
+}
+
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -43,7 +50,13 @@ body {
   overflow-x: hidden;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+header {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 ::selection {
