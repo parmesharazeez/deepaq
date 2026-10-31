@@ -1,0 +1,22 @@
+{
+  "name": "deepaq",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DEEPAQ — Atmospheric Intelligence & PM2.5 Predictive Platform",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix frontend run start",
+    "lint": "npm --prefix frontend run lint"
+  },
+  "keywords": [
+    "air-quality",
+    "pm25-prediction",
+    "environmental-intelligence",
+    "nextjs",
+    "machine-learning",
+    "chandigarh"
+  ],
+  "author": "Parmeshar Azeez Singh Bawa",
+  "license": "MIT"
+}
